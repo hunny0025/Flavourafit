@@ -1,0 +1,23 @@
+services:
+  # Backend Service
+  - type: web
+    name: flavor-sense-backend
+    env: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
+
+  # Frontend Service
+  - type: web
+    name: flavor-sense-frontend
+    env: static
+    buildCommand: cd Frontend && npm install && npm run build
+    staticPublishPath: Frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          name: flavor-sense-backend
+          type: web
+          property: host
